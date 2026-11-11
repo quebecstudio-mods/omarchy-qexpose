@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "quebecstudio.qexpose",
+  "name": "qExposé",
+  "version": "1.0.0",
+  "author": "Québec Studio",
+  "license": "MIT",
+  "homepage": "https://github.com/quebecstudio-mods/omarchy-qexpose",
+  "description": "A Mac-style Exposé for Omarchy: live window thumbnails under a workspace strip, App Exposé for docks, and an Alt+Tab switcher with previews.",
+  "kinds": [
+    "service"
+  ],
+  "entryPoints": {
+    "service": "Expose.qml"
+  }
+}
