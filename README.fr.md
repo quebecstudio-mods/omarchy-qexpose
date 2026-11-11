@@ -44,6 +44,10 @@ notifications.
 omarchy plugin add https://github.com/quebecstudio-mods/omarchy-qexpose --enable
 ```
 
+Omarchy affiche d'abord un avertissement de sécurité et demande de confirmer
+(*Clone and add this plugin?*) ; ajoutez `--yes` pour sauter la question dans un
+script.
+
 Liez ensuite les touches dans `~/.config/hypr/bindings.lua`. Super+D est libre
 dans Omarchy ; Alt+Tab remplace son « fenêtre suivante » :
 

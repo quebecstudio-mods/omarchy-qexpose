@@ -42,6 +42,9 @@ Notification Center.
 omarchy plugin add https://github.com/quebecstudio-mods/omarchy-qexpose --enable
 ```
 
+Omarchy first shows a security notice and asks you to confirm (*Clone and add
+this plugin?*); add `--yes` to skip the question in a script.
+
 Then bind the keys in `~/.config/hypr/bindings.lua`. Super+D is free in
 Omarchy; Alt+Tab replaces its "focus next window":
 
