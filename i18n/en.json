@@ -3,5 +3,6 @@
   "window.onWorkspace": "%1 · workspace %2",
   "workspace.name": "Workspace %1",
   "workspace.new": "New workspace",
-  "workspace.empty": "No windows on this workspace"
+  "workspace.empty": "No windows on this workspace",
+  "filter.none": "No windows match “%1”"
 }

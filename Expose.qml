@@ -31,6 +31,8 @@ Item {
   // Plugin settings, read from the plugin's entry in shell.json: the shell
   // hands them only to bar widgets.
   property var settings: ({})
+  // qDock's entry, if qDock is installed: qExposé takes its style by default.
+  property var dockSettings: null
   FileView {
     path: (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/omarchy/shell.json"
     watchChanges: true
@@ -39,20 +41,48 @@ Item {
     onLoaded: {
       var id = root.manifest && root.manifest.id ? root.manifest.id : "quebecstudio.qexpose"
       var found = {}
+      var dock = null
       try {
         var list = JSON.parse(text()).plugins || []
-        for (var i = 0; i < list.length; i++) if (list[i] && list[i].id === id) { found = list[i]; break }
+        for (var i = 0; i < list.length; i++) {
+          if (!list[i]) continue
+          if (list[i].id === id) found = list[i]
+          else if (list[i].id === "quebecstudio.qdock") dock = list[i]
+        }
       } catch (e) {}
       root.settings = found
+      root.dockSettings = dock
     }
   }
 
-  // "mac" (default): rounded corners and translucent surfaces; "omarchy": the
-  // theme's corner radius and opaque surfaces.
-  readonly property bool macStyle: root.settings.style !== "omarchy"
-  readonly property int radius: macStyle ? Math.max(Style.cornerRadius, Style.space(12)) : Style.cornerRadius
+  // The style, as in qDock and qCenter: qExposé's own "style" if set, else
+  // qDock's (whose default is omarchy), else cupertino when there is no qDock.
+  // Cupertino ("mac" is read as cupertino): round corners, translucent
+  // surfaces, round pills. Omarchy: the theme's corners, opaque. Redmond:
+  // Windows' small corners, slightly translucent. Plasma: KDE's tight corners,
+  // nearly opaque.
+  readonly property string styleName: {
+    var s = root.settings.style
+    if (!s && root.dockSettings) s = root.dockSettings.style || "omarchy"
+    if (s === "mac") s = "cupertino"
+    return ["omarchy", "cupertino", "redmond", "plasma"].indexOf(s) >= 0 ? s : "cupertino"
+  }
+  readonly property var look: ({
+    omarchy: { tile: Style.cornerRadius, sheet: Style.cornerRadius, pill: Style.cornerRadius, alpha: 1 },
+    cupertino: { tile: Math.max(Style.cornerRadius, Style.space(12)), sheet: Math.max(Style.cornerRadius, Style.space(16)),
+                 pill: -1, alpha: 0.85 },
+    redmond: { tile: Style.space(8), sheet: Style.space(8), pill: Style.space(4), alpha: 0.9 },
+    plasma: { tile: Style.space(5), sheet: Style.space(5), pill: Style.space(3), alpha: 0.97 }
+  })[styleName]
+  readonly property int radius: look.tile
+  // -1: fully round.
+  function pillRadius(height) { return look.pill < 0 ? height / 2 : Math.min(look.pill, height / 2) }
 
   property bool opened: false
+  // Typed text: only the windows whose title, app id or app name contain it
+  // are shown. Emptied at each opening.
+  property string filter: ""
+  onFilterChanged: if (root.opened && !root.closing) root.relayout()
   // False: each thumbnail sits where its window is; true: in the grid.
   property bool expanded: false
   property bool closing: false
@@ -242,6 +272,20 @@ Item {
     }
   }
 
+  // Lower case, without accents, so "ecran" finds "Écran".
+  function fold(text) {
+    return String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+  }
+
+  function matches(t) {
+    if (root.filter === "") return true
+    var needle = root.fold(root.filter)
+    var appId = String(t.wayland.appId || "")
+    var entry = DesktopEntries.heuristicLookup(appId)
+    var haystack = [t.wayland.title, appId, entry ? entry.name : ""]
+    return haystack.some(function(text) { return root.fold(text).indexOf(needle) >= 0 })
+  }
+
   function build() {
     var monitor = Hyprland.focusedMonitor
     if (!monitor || !monitor.activeWorkspace) return false
@@ -264,6 +308,7 @@ Item {
       if (root.mode === "app") {
         if (wanted.indexOf(root.bare(t.address)) < 0) continue
       } else if (t.workspace.id !== root.activeWorkspaceId) continue
+      if (!root.matches(t)) continue
       list.push(root.windowInfo(t, monitor))
     }
 
@@ -335,6 +380,7 @@ Item {
 
   function start() {
     if (switcher.opened) switcher.cancel()
+    root.filter = ""
     Hyprland.refreshToplevels()
     Hyprland.refreshWorkspaces()
     if (!root.build()) return
@@ -375,7 +421,8 @@ Item {
     root.selectedIndex = -1
     for (var i = 0; i < root.windows.length; i++) if (root.windows[i].address === keep) root.selectedIndex = i
     if (root.selectedIndex < 0 && root.windows.length > 0) root.selectedIndex = 0
-    if (root.mode === "app" && root.windows.length === 0) root.close(null)
+    // The windows are gone (not just filtered out): App Exposé has nothing left.
+    if (root.mode === "app" && root.windows.length === 0 && root.filter === "") root.close(null)
   }
 
   // Closes by sending the thumbnails back to their windows, then focuses
@@ -500,7 +547,7 @@ Item {
             height: root.stripCardH
             radius: root.radius
             clip: true
-            color: Util.alpha(Commons.Color.popups.background, card.modelData.fresh ? 0.35 : (root.macStyle ? 0.85 : 1))
+            color: Util.alpha(Commons.Color.popups.background, card.modelData.fresh ? 0.35 : root.look.alpha)
             border.width: card.current || card.target || card.hovered ? Math.max(2, Style.space(3)) : Math.max(1, Style.space(1))
             border.color: card.target ? Commons.Color.accent
               : card.current ? Commons.Color.accent
@@ -564,7 +611,7 @@ Item {
       visible: root.opened && root.windows.length === 0
       anchors.centerIn: parent
       textFormat: Text.PlainText
-      text: strings.t("workspace.empty")
+      text: root.filter !== "" ? strings.t("filter.none").arg(root.filter) : strings.t("workspace.empty")
       color: Commons.Color.menu.text
       font.family: Style.font.family
       font.pixelSize: Style.font.heading
@@ -663,7 +710,7 @@ Item {
           height: titleText.implicitHeight + Style.spacing.xs * 2
           x: (tile.width - width) / 2
           y: tile.height + Math.round(36 * Style.fontScale) * 0.5
-          radius: root.macStyle ? height / 2 : Style.cornerRadius
+          radius: root.pillRadius(height)
           color: Commons.Color.tooltip.background
 
           Text {
@@ -732,7 +779,7 @@ Item {
           visible: root.expanded && !tile.dragged && (tileMouse.containsMouse || closeMouse.containsMouse)
           width: size
           height: size
-          radius: root.macStyle ? size / 2 : Style.cornerRadius
+          radius: root.pillRadius(size)
           x: -size / 3
           y: -size / 3
           z: 5
@@ -760,6 +807,33 @@ Item {
       }
     }
 
+    // ---- Filter ---------------------------------------------------------------
+    Rectangle {
+      visible: root.opened && root.filter !== ""
+      readonly property real maxWidth: parent.width * 0.6
+      width: Math.min(maxWidth, filterText.implicitWidth + Style.spacing.md * 2)
+      height: filterText.implicitHeight + Style.spacing.sm * 2
+      x: (parent.width - width) / 2
+      y: parent.height - height - Style.space(48)
+      z: 10
+      radius: root.pillRadius(height)
+      color: Util.alpha(Commons.Color.popups.background, root.look.alpha)
+      border.width: Math.max(1, Style.space(1))
+      border.color: Commons.Color.accent
+
+      Text {
+        id: filterText
+        anchors.centerIn: parent
+        width: Math.min(implicitWidth, parent.maxWidth - Style.spacing.md * 2)
+        elide: Text.ElideLeft
+        textFormat: Text.PlainText
+        text: root.filter
+        color: Commons.Color.popups.text
+        font.family: Style.font.family
+        font.pixelSize: Style.font.heading
+      }
+    }
+
     Item {
       id: keyCatcher
       anchors.fill: parent
@@ -768,7 +842,15 @@ Item {
       Component.onCompleted: forceActiveFocus()
 
       Keys.onPressed: function(event) {
-        if (event.key === Qt.Key_Escape) root.close(null)
+        var plain = !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))
+        // Escape empties the filter first, then closes.
+        if (event.key === Qt.Key_Escape) {
+          if (root.filter !== "") root.filter = ""
+          else root.close(null)
+        }
+        else if (event.key === Qt.Key_Backspace && root.filter !== "") root.filter = root.filter.slice(0, -1)
+        // Space types a space once a filter is started; before, it opens the window.
+        else if (event.key === Qt.Key_Space && root.filter !== "" && plain) root.filter += " "
         else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
           if (root.selectedIndex >= 0 && root.selectedIndex < root.windows.length) root.close(root.windows[root.selectedIndex])
           else root.close(null)
@@ -780,6 +862,7 @@ Item {
         else if (event.key === Qt.Key_Tab && root.windows.length > 0) root.selectedIndex = (root.selectedIndex + 1) % root.windows.length
         else if (event.key === Qt.Key_Backtab && root.windows.length > 0) root.selectedIndex = (root.selectedIndex - 1 + root.windows.length) % root.windows.length
         else if (event.key === Qt.Key_W && (event.modifiers & Qt.ControlModifier) && root.selectedIndex >= 0) root.closeWindow(root.windows[root.selectedIndex])
+        else if (plain && event.text.length > 0 && event.text.charCodeAt(0) >= 32 && event.text.charCodeAt(0) !== 127) root.filter += event.text
         else return
         event.accepted = true
       }

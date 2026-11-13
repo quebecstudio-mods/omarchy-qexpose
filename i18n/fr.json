@@ -3,5 +3,6 @@
   "window.onWorkspace": "%1 · bureau %2",
   "workspace.name": "Bureau %1",
   "workspace.new": "Nouveau bureau",
-  "workspace.empty": "Aucune fenêtre sur ce bureau"
+  "workspace.empty": "Aucune fenêtre sur ce bureau",
+  "filter.none": "Aucune fenêtre ne correspond à « %1 »"
 }

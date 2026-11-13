@@ -20,6 +20,9 @@ Notification Center.
 - **A workspace strip**, like Mission Control: click a workspace to go there,
   or drop a thumbnail on it to move the window. The last card, **+**, is a new
   workspace.
+- **Type to filter.** Start typing in Exposé: only the windows whose title or
+  app matches stay. Backspace erases, Escape clears the filter, Enter opens the
+  selected window.
 - **Close from the overview.** Hover a thumbnail and click its ×, middle-click
   it, or press Ctrl+W.
 - **App Exposé.** A dock can ask for every window of one app, across
@@ -28,8 +31,9 @@ Notification Center.
 - **Alt+Tab with previews.** Hold Alt and press Tab: every window, most recently
   used first; release Alt to switch. A quick Alt+Tab goes straight back to the
   previous window without showing anything.
-- **Two styles.** Mac (round corners, frosted glass) or Omarchy (your theme's
-  corners, opaque).
+- **Four styles**, qDock's: Omarchy (your theme's corners, opaque), Cupertino
+  (round corners, frosted glass), Redmond (like Windows) and Plasma (like KDE).
+  With qDock installed, qExposé follows qDock's style unless you set its own.
 - **English and French**, following Omarchy's language.
 
 | App Exposé | Alt+Tab | Omarchy style |
@@ -60,7 +64,7 @@ hl.bind("ALT + Alt_L", function() hl.exec_cmd("omarchy-shell -q quebecstudio.qex
 
 ### Frosted glass
 
-In the Mac style, the Alt+Tab panel is translucent. For the blur behind it, add
+In the Cupertino, Redmond and Plasma styles, the Alt+Tab panel is translucent. For the blur behind it, add
 this rule to `~/.config/hypr/hyprland.lua`:
 
 ```lua
@@ -77,7 +81,7 @@ In qExposé's entry under `plugins` in `~/.config/omarchy/shell.json`:
 
 | Setting | Values | Default |
 | --- | --- | --- |
-| `style` | `"mac"`, `"omarchy"` | `"mac"` |
+| `style` | `"omarchy"`, `"cupertino"`, `"redmond"`, `"plasma"` (`"mac"`, 1.0's name, still reads as `"cupertino"`) | qDock's style, or `"cupertino"` without qDock |
 
 ## Commands
 
@@ -98,4 +102,4 @@ Window addresses come from `hyprctl clients -j`.
 
 MIT © Québec Studio
 
-macOS, Finder, Launchpad, Mission Control and Exposé are trademarks of Apple Inc. This project is not affiliated with or endorsed by Apple.
+macOS, Finder, Launchpad, Mission Control and Exposé are trademarks of Apple Inc.; Windows is a trademark of Microsoft Corporation; KDE and Plasma are trademarks of KDE e.V. This project is not affiliated with or endorsed by any of them.

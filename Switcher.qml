@@ -140,8 +140,8 @@ Item {
       anchors.centerIn: parent
       width: Math.ceil(flow.implicitW) + contentLeftInset + contentRightInset
       height: flow.height + titleLine.height + Style.space(14) + contentTopInset + contentBottomInset
-      radius: root.expose.macStyle ? Math.max(Style.cornerRadius, Style.space(16)) : Style.cornerRadius
-      color: root.expose.macStyle ? Util.alpha(Commons.Color.menu.background, 0.85) : Commons.Color.menu.background
+      radius: root.expose.look.sheet
+      color: Util.alpha(Commons.Color.menu.background, root.expose.look.alpha)
       borderSpec: Border.surfaceSpec("menu", "border", Commons.Color.menu.border, Math.max(1, Style.space(2)))
       padding: Style.spacing.md
 

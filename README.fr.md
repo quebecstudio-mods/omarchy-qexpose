@@ -21,6 +21,9 @@ notifications.
 - **Une bande des bureaux**, comme Mission Control : un clic sur un bureau y va,
   et une miniature déposée dessus y déplace la fenêtre. La dernière carte,
   **+**, est un nouveau bureau.
+- **Taper pour filtrer.** Commencez à taper dans Exposé : seules restent les
+  fenêtres dont le titre ou l'app correspond. Retour arrière efface, Échap vide
+  le filtre, Entrée ouvre la fenêtre choisie.
 - **Fermer depuis la vue d'ensemble.** Survolez une miniature et cliquez son ×,
   cliquez-la du bouton du milieu, ou faites Ctrl+W.
 - **App Exposé.** Un dock peut demander toutes les fenêtres d'une app, tous
@@ -30,8 +33,10 @@ notifications.
   fenêtres, la plus récemment utilisée d'abord ; relâchez Alt pour y aller. Un
   Alt+Tab rapide revient directement à la fenêtre précédente, sans rien
   afficher.
-- **Deux styles.** Mac (coins arrondis, verre givré) ou Omarchy (coins de votre
-  thème, opaque).
+- **Quatre styles**, ceux de qDock : Omarchy (coins du thème, opaque),
+  Cupertino (coins arrondis, verre givré), Redmond (comme Windows) et Plasma
+  (comme KDE). Avec qDock installé, qExposé suit le style de qDock, sauf si vous
+  lui donnez le sien.
 - **En anglais et en français**, selon la langue d'Omarchy.
 
 | App Exposé | Alt+Tab | Style Omarchy |
@@ -63,7 +68,7 @@ hl.bind("ALT + Alt_L", function() hl.exec_cmd("omarchy-shell -q quebecstudio.qex
 
 ### Verre givré
 
-En style Mac, le panneau Alt+Tab est translucide. Pour le flou derrière,
+En styles Cupertino, Redmond et Plasma, le panneau Alt+Tab est translucide. Pour le flou derrière,
 ajoutez cette règle à `~/.config/hypr/hyprland.lua` :
 
 ```lua
@@ -80,7 +85,7 @@ Dans l'entrée de qExposé sous `plugins`, dans `~/.config/omarchy/shell.json` :
 
 | Réglage | Valeurs | Par défaut |
 | --- | --- | --- |
-| `style` | `"mac"`, `"omarchy"` | `"mac"` |
+| `style` | `"omarchy"`, `"cupertino"`, `"redmond"`, `"plasma"` (`"mac"`, le nom de la 1.0, se lit encore `"cupertino"`) | le style de qDock, ou `"cupertino"` sans qDock |
 
 ## Commandes
 
@@ -101,4 +106,4 @@ Les adresses des fenêtres viennent de `hyprctl clients -j`.
 
 MIT © Québec Studio
 
-macOS, Finder, Launchpad, Mission Control et Exposé sont des marques d'Apple Inc. Ce projet n'est ni affilié à Apple ni approuvé par Apple.
+macOS, Finder, Launchpad, Mission Control et Exposé sont des marques d'Apple Inc. ; Windows est une marque de Microsoft Corporation ; KDE et Plasma sont des marques de KDE e.V. Ce projet n'est ni affilié à ces sociétés ni approuvé par elles.
