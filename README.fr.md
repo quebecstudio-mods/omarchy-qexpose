@@ -102,6 +102,12 @@ omarchy-shell -q quebecstudio.qexpose switcherCancel
 
 Les adresses des fenêtres viennent de `hyprctl clients -j`.
 
+## Voir aussi
+
+- [qDock](https://github.com/quebecstudio-mods/omarchy-qdock), un dock façon Mac.
+- [qCenter](https://github.com/quebecstudio-mods/omarchy-qcenter), un centre de notifications avec l'agenda du jour.
+- [Journal des versions](CHANGELOG.fr.md) : ce qui a changé à chaque version.
+
 ## Licence
 
 MIT © Québec Studio
