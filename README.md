@@ -71,6 +71,18 @@ this rule to `~/.config/hypr/hyprland.lua`:
 hl.layer_rule({ match = { namespace = "^qexpose-switcher$" }, blur = true, ignore_alpha = 0.2 })
 ```
 
+## Remove
+
+```bash
+omarchy plugin remove quebecstudio.qexpose
+```
+
+Omarchy turns qExposé off and deletes its folder. Then take out the lines you
+added to `~/.config/hypr/bindings.lua` (Super+D, Alt+Tab and the Alt release;
+Alt+Tab goes back to Omarchy's "focus next window") and the blur rule in
+`~/.config/hypr/hyprland.lua`. Its settings stay in its entry under `plugins` in
+`~/.config/omarchy/shell.json`: delete it too for a clean slate.
+
 ## Settings
 
 In qExposé's entry under `plugins` in `~/.config/omarchy/shell.json`:
@@ -102,6 +114,7 @@ Window addresses come from `hyprctl clients -j`.
 
 - [qDock](https://github.com/quebecstudio-mods/omarchy-qdock), a Mac-style dock.
 - [qCenter](https://github.com/quebecstudio-mods/omarchy-qcenter), a notification center with today's agenda.
+- [qSpot](https://github.com/quebecstudio-mods/omarchy-qspot), a Spotlight-style search: apps, files, calculations and the web.
 - [Changelog](CHANGELOG.md): what changed in each version.
 
 ## License

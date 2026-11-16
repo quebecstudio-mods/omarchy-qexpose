@@ -75,6 +75,19 @@ ajoutez cette règle à `~/.config/hypr/hyprland.lua` :
 hl.layer_rule({ match = { namespace = "^qexpose-switcher$" }, blur = true, ignore_alpha = 0.2 })
 ```
 
+## Désinstallation
+
+```bash
+omarchy plugin remove quebecstudio.qexpose
+```
+
+Omarchy désactive qExposé et supprime son dossier. Retirez ensuite les lignes
+ajoutées à `~/.config/hypr/bindings.lua` (Super+D, Alt+Tab et le relâchement
+d'Alt ; Alt+Tab revient au « focus sur la fenêtre suivante » d'Omarchy) et la
+règle de flou dans `~/.config/hypr/hyprland.lua`. Ses réglages restent dans son
+entrée sous `plugins` dans `~/.config/omarchy/shell.json` : supprimez-la aussi
+pour repartir de zéro.
+
 ## Réglages
 
 Dans l'entrée de qExposé sous `plugins`, dans `~/.config/omarchy/shell.json` :
@@ -106,6 +119,7 @@ Les adresses des fenêtres viennent de `hyprctl clients -j`.
 
 - [qDock](https://github.com/quebecstudio-mods/omarchy-qdock), un dock façon Mac.
 - [qCenter](https://github.com/quebecstudio-mods/omarchy-qcenter), un centre de notifications avec l'agenda du jour.
+- [qSpot](https://github.com/quebecstudio-mods/omarchy-qspot), une recherche façon Spotlight : apps, fichiers, calculs et web.
 - [Journal des versions](CHANGELOG.fr.md) : ce qui a changé à chaque version.
 
 ## Licence
